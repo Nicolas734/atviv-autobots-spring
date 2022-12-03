@@ -1,6 +1,9 @@
 package com.autobots.automanager.entidades;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,8 +18,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.autobots.automanager.enumeracoes.PerfilUsuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -33,8 +38,12 @@ public class Usuario extends RepresentationModel<Usuario>{
 	private String nome;
 	@Column
 	private String nomeSocial;
+	@Column
+	private String senha;
+	@Column
+	private String username;
 	@ElementCollection(fetch = FetchType.EAGER)
-	private Set<PerfilUsuario> perfis = new HashSet<>();
+	private List<Perfis> perfis ;
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Telefone> telefones = new HashSet<>();
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -71,10 +80,10 @@ public class Usuario extends RepresentationModel<Usuario>{
 	public void setNomeSocial(String nomeSocial) {
 		this.nomeSocial = nomeSocial;
 	}
-	public Set<PerfilUsuario> getPerfis() {
+	public List<PerfilUsuario> getPerfis() {
 		return perfis;
 	}
-	public void setPerfis(Set<PerfilUsuario> perfis) {
+	public void setPerfis(List<PerfilUsuario> perfis) {
 		this.perfis = perfis;
 	}
 	public Set<Telefone> getTelefones() {
@@ -124,5 +133,22 @@ public class Usuario extends RepresentationModel<Usuario>{
 	}
 	public void setVeiculos(Set<Veiculo> veiculos) {
 		this.veiculos = veiculos;
+	}
+	public String getSenha() {
+		return senha;
+	}
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	@Override
+	@JsonIgnore
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.perfis;
 	}
 }
