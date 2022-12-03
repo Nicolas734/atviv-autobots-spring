@@ -1,14 +1,13 @@
 package com.autobots.automanager.controles;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +51,7 @@ public class VendaControle {
 	@Autowired
 	public AdicionadorLinkVenda adicionarLink;
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar")
 	public ResponseEntity<List<Venda>> buscarVendas() {
 		List<Venda> vendas = repositorio.findAll();
@@ -64,7 +64,8 @@ public class VendaControle {
 		}
 		return new ResponseEntity<List<Venda>>(vendas, HttpStatus.FOUND);
 	}
-
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar/{id}")
 	public ResponseEntity<Venda> buscarVenda(@PathVariable Long id) {
 		Venda venda = repositorio.findById(id).orElse(null);
@@ -80,6 +81,7 @@ public class VendaControle {
 		return new ResponseEntity<Venda>(venda, status);
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_VENDEDOR', 'ROLE_GERENTE')")
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Empresa> cadastrarVenda(@RequestBody VendaMolde dados){
 		Empresa empresa = repositorioEmpresa.findById(dados.getIdEmpresa()).orElse(null);
@@ -147,6 +149,7 @@ public class VendaControle {
 		}
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@PutMapping("/atualizar/{idVenda}")
 	public ResponseEntity<?> atualizarVenda(@PathVariable Long idVenda, @RequestBody Venda dados) {
 		Venda venda = repositorio.findById(idVenda).orElse(null);
@@ -163,6 +166,7 @@ public class VendaControle {
 		}
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@DeleteMapping("/excluir/{idVenda}")
 	public ResponseEntity<?> excluirVenda(@PathVariable Long idVenda) {
 		List<Empresa> empresas = repositorioEmpresa.findAll();

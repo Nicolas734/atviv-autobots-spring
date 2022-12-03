@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ public class ServicoControle {
 	@Autowired
 	private AdicionadorLinkServico adicionarLink;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar")
 	public ResponseEntity<List<Servico>> buscarServicos(){
 		List<Servico> servicos = repositorio.findAll();
@@ -53,6 +55,7 @@ public class ServicoControle {
 		return new ResponseEntity<List<Servico>>(novaListaServicos, HttpStatus.FOUND);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar/{id}")
 	public ResponseEntity<Servico> buscarServico(@PathVariable Long id){
 		Servico servico = repositorio.findById(id).orElse(null);
@@ -68,6 +71,7 @@ public class ServicoControle {
 		return new ResponseEntity<Servico>(servico, status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@PostMapping("/cadastrar/{idEmpresa}")
 	public ResponseEntity<Empresa> cadastrarServicoEmpresa(@RequestBody Servico dados, @PathVariable Long idEmpresa){
 		dados.setOriginal(true);
@@ -88,6 +92,7 @@ public class ServicoControle {
 		return new ResponseEntity<Empresa>(empresa, status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@PutMapping("/atualizar/{idServico}")
 	public ResponseEntity<?> atualizarServico(@PathVariable Long idServico, @RequestBody Servico dados){
 		Servico servico = repositorio.findById(idServico).orElse(null);
@@ -109,6 +114,7 @@ public class ServicoControle {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@DeleteMapping("/excluir/{idServico}")
 	public ResponseEntity<?> excluirServico(@PathVariable Long idServico){
 		List<Empresa> empresas = repositorioEmpresa.findAll();

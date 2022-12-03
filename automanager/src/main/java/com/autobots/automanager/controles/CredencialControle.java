@@ -2,11 +2,11 @@ package com.autobots.automanager.controles;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -104,8 +104,17 @@ public class CredencialControle {
 			if (verificador == true) {
 				return new ResponseEntity<String>("Credencial ja existente...",HttpStatus.CONFLICT);
 			}else {
-				dados.setCriacao(new Date());
-				usuario.getCredenciais().add(dados);
+				BCryptPasswordEncoder codificador = new BCryptPasswordEncoder();
+				
+				CredencialUsuarioSenha credencial = new CredencialUsuarioSenha(); 
+				credencial.setNomeUsuario(dados.getNomeUsuario());
+				String senha = codificador.encode(dados.getSenha());	
+				credencial.setSenha(senha);
+				credencial.setCriacao(new Date());
+				credencial.setInativo(false);
+				credencial.setUltimoAcesso(new Date());
+				usuario.getCredenciais().add(credencial);
+				
 				repositorioUsuario.save(usuario);
 				return new ResponseEntity<Usuario>(usuario,HttpStatus.CREATED);
 			}

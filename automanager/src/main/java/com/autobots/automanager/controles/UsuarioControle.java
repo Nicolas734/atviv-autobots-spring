@@ -1,11 +1,11 @@
 package com.autobots.automanager.controles;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.autobots.automanager.entidades.Credencial;
-import com.autobots.automanager.entidades.Documento;
-import com.autobots.automanager.entidades.Email;
 import com.autobots.automanager.entidades.Empresa;
-import com.autobots.automanager.entidades.Mercadoria;
-import com.autobots.automanager.entidades.Telefone;
 import com.autobots.automanager.entidades.Usuario;
 import com.autobots.automanager.entidades.Veiculo;
 import com.autobots.automanager.entidades.Venda;
@@ -46,6 +41,7 @@ public class UsuarioControle {
 	@Autowired
 	private AdicionadorLinkUsuario adicionarLink;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar")
 	public ResponseEntity<List<Usuario>> buscarUsuarios(){
 		List<Usuario> usuarios = repositorio.findAll();
@@ -59,6 +55,7 @@ public class UsuarioControle {
 		return new ResponseEntity<List<Usuario>>(usuarios,HttpStatus.FOUND);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR', 'ROLE_CLIENTE')")
 	@GetMapping("/buscar/{id}")
 	public ResponseEntity<Usuario> buscarUsuario(@PathVariable Long id){
 		Usuario usuario = repositorio.findById(id).orElse(null);
@@ -74,6 +71,7 @@ public class UsuarioControle {
 		return new ResponseEntity<Usuario>(usuario,status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@PostMapping("/cadastrar-cliente")
 	public ResponseEntity<Usuario> cadastrarUsuarioCliente(@RequestBody Usuario dados){
 		dados.getPerfis().add(PerfilUsuario.CLIENTE);
@@ -84,6 +82,7 @@ public class UsuarioControle {
 		return new ResponseEntity<Usuario>(usuario,HttpStatus.CREATED);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@PostMapping("/cadastrar-funcionario/{idEmpresa}")
 	public ResponseEntity<?> cadastrarUsuarioFuncionario(@RequestBody Usuario dados, @PathVariable Long idEmpresa){
 		dados.getPerfis().add(PerfilUsuario.FUNCIONARIO);
@@ -102,6 +101,7 @@ public class UsuarioControle {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@PostMapping("/cadastrar-fornecedor")
 	public ResponseEntity<Usuario> cadastrarUsuarioFornecedor(@RequestBody Usuario dados){
 		dados.getPerfis().add(PerfilUsuario.FORNECEDOR);
@@ -112,6 +112,7 @@ public class UsuarioControle {
 		return new ResponseEntity<Usuario>(usuario,HttpStatus.CREATED);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@PutMapping("/atualizar/{idUsuario}")
 	public ResponseEntity<?> atualizarUsuario(@PathVariable Long idUsuario, @RequestBody Usuario dados){
 		Usuario usuario = repositorio.findById(idUsuario).orElse(null);
@@ -131,6 +132,7 @@ public class UsuarioControle {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@DeleteMapping("/excluir/{idUsuario}")
 	public ResponseEntity<?> excluirUsuario(@PathVariable Long idUsuario){
 		Usuario verificacao = repositorio.findById(idUsuario).orElse(null);

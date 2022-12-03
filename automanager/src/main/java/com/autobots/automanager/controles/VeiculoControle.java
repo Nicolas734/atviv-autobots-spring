@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class VeiculoControle {
 	@Autowired
 	private AdicionadorLinkVeiculo adicionarLink;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar")
 	public ResponseEntity<List<Veiculo>> buscarVeiculos(){
 		List<Veiculo> veiculos = repositorio.findAll();
@@ -48,6 +50,7 @@ public class VeiculoControle {
 		return new ResponseEntity<List<Veiculo>>(veiculos,HttpStatus.FOUND);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar/{id}")
 	public ResponseEntity<Veiculo> buscarVeiculo(@PathVariable Long id){
 		Veiculo veiculo = repositorio.findById(id).orElse(null);
@@ -63,6 +66,7 @@ public class VeiculoControle {
 		return new ResponseEntity<Veiculo>(veiculo,status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PostMapping("/cadastrar/{idUsuario}")
 	public ResponseEntity<Usuario> cadastrarVeiculoCliente(@RequestBody Veiculo dados, @PathVariable Long idUsuario){
 		Usuario usuario = repositorioUsuario.findById(idUsuario).orElse(null);
@@ -83,6 +87,7 @@ public class VeiculoControle {
 		return new ResponseEntity<Usuario>(usuario,status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PutMapping("/atualizar/{idVeiculo}")
 	public ResponseEntity<?> atualizarVeiculo(@PathVariable Long idVeiculo, @RequestBody Veiculo dados){
 		Veiculo veiculo = repositorio.findById(idVeiculo).orElse(null);
@@ -102,6 +107,7 @@ public class VeiculoControle {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@DeleteMapping("/excluir/{idVeiculo}")
 	public ResponseEntity<?> excluirVeiculo(@PathVariable Long idVeiculo){
 		List<Usuario> usuarios = repositorioUsuario.findAll();

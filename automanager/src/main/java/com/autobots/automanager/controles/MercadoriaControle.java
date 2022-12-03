@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,6 +42,7 @@ public class MercadoriaControle {
 	@Autowired
 	private AdicionadorLinkMercadoria adicionarLink;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar")
 	public ResponseEntity<List<Mercadoria>> buscarMercadorias(){
 		List<Mercadoria> mercadorias = repositorio.findAll();
@@ -59,6 +60,7 @@ public class MercadoriaControle {
 		return new ResponseEntity<List<Mercadoria>>(mercadorias, HttpStatus.FOUND);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE', 'ROLE_VENDEDOR')")
 	@GetMapping("/buscar/{id}")
 	public ResponseEntity<Mercadoria> buscarMercadoria(@PathVariable Long id){
 		Mercadoria mercadoria = repositorio.findById(id).orElse(null);
@@ -74,6 +76,7 @@ public class MercadoriaControle {
 		return new ResponseEntity<Mercadoria>(mercadoria,status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@PostMapping("/cadastrar/{idEmpresa}")
 	public ResponseEntity<Empresa> cadastrarMercadoriaEmpresa(@RequestBody Mercadoria dados, @PathVariable Long idEmpresa){
 		Empresa empresa = repositorioEmpresa.findById(idEmpresa).orElse(null);
@@ -95,6 +98,7 @@ public class MercadoriaControle {
 		return new ResponseEntity<Empresa>(empresa,status);
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@PostMapping("/cadastrar-mercadoria-fornecedor/{idUsuarioFornecedor}")
 	public ResponseEntity<?> cadastrarMercadoriaFornecedor(@RequestBody Mercadoria dados, @PathVariable Long idUsuarioFornecedor){
 		Usuario usuario = repositorioUsuario.findById(idUsuarioFornecedor).orElse(null);
@@ -114,6 +118,7 @@ public class MercadoriaControle {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@PutMapping("/atualizar/{idMercadoria}")
 	public ResponseEntity<?> atualizarMercadoria(@PathVariable Long idMercadoria, @RequestBody Mercadoria dados){
 		Mercadoria mercadoria = repositorio.findById(idMercadoria).orElse(null);
@@ -144,6 +149,7 @@ public class MercadoriaControle {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_GERENTE')")
 	@DeleteMapping("/excluir/{idMercadoria}")
 	public ResponseEntity<?> excluirMercadoriaEmpresa(@PathVariable Long idMercadoria){
 		List<Empresa> empresas = repositorioEmpresa.findAll();
